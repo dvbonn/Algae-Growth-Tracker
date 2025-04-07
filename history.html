@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Algae Growth Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-emerald-800 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">
+                <i class="fas fa-seedling mr-2"></i>Algae Growth Tracker
+            </h1>
+            <div class="space-x-4">
+                <a href="index.html" class="hover:text-emerald-200">Home</a>
+                <a href="dashboard.html" class="hover:text-emerald-200">Dashboard</a>
+                <a href="settings.html" class="hover:text-emerald-200">Settings</a>
+                <a href="history.html" class="font-semibold text-emerald-200">History</a>
+                <a href="about.html" class="hover:text-emerald-200">About</a>
+                <a href="#" class="hover:text-emerald-200" id="logout-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // Check authentication
+        if(!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-6 text-emerald-900">Historical Data Logs</h2>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature (°C)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Light Intensity (lux)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">pH Level</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body" class="bg-white divide-y divide-gray-200">
+                    <!-- Historical data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4">
+            <button id="export-btn" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition">
+                <i class="fas fa-file-download mr-2"></i>Export as CSV
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Load historical data from localStorage
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('algaeHistory')) || [];
+            const tableBody = document.getElementById('history-table-body');
+            tableBody.innerHTML = '';
+
+            history.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${new Date(entry.timestamp).toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${entry.temperature}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${entry.lightIntensity}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${entry.phLevel}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Export history as CSV
+        document.getElementById('export-btn').addEventListener('click', () => {
+            const history = JSON.parse(localStorage.getItem('algaeHistory')) || [];
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Timestamp,Temperature (°C),Light Intensity (lux),pH Level\n";
+
+            history.forEach(entry => {
+                const row = `${new Date(entry.timestamp).toLocaleString()},${entry.temperature},${entry.lightIntensity},${entry.phLevel}`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "algae_history.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Load history on page load
+        document.addEventListener('DOMContentLoaded', loadHistory);
+
+        // Logout functionality
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

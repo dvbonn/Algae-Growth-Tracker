@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Algae Growth Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-emerald-800 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">
+                <i class="fas fa-seedling mr-2"></i>Algae Growth Tracker
+            </h1>
+            <div class="space-x-4">
+                <a href="index.html" class="hover:text-emerald-200">Home</a>
+                <a href="dashboard.html" class="hover:text-emerald-200">Dashboard</a>
+                <a href="settings.html" class="font-semibold text-emerald-200">Settings</a>
+                <a href="history.html" class="hover:text-emerald-200">History</a>
+                <a href="about.html" class="hover:text-emerald-200">About</a>
+                <a href="#" class="hover:text-emerald-200" id="logout-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // Check authentication
+        if(!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        // Logout functionality
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'login.html';
+        });
+    </script>
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-6 text-emerald-900">Configure Growth Parameters</h2>
+        <form id="settings-form" class="bg-white p-6 rounded-lg shadow">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="temperature" class="block text-sm font-medium text-gray-700">Temperature (°C)</label>
+                    <input type="number" id="temperature" name="temperature" min="15" max="35" step="0.1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" required>
+                </div>
+                <div>
+                    <label for="light-intensity" class="block text-sm font-medium text-gray-700">Light Intensity (lux)</label>
+                    <input type="number" id="light-intensity" name="light-intensity" min="0" max="2000" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" required>
+                </div>
+                <div>
+                    <label for="light-duration" class="block text-sm font-medium text-gray-700">Light Duration (hours)</label>
+                    <input type="number" id="light-duration" name="light-duration" min="0" max="24" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" required>
+                </div>
+                <div>
+                    <label for="co2-duration" class="block text-sm font-medium text-gray-700">CO₂ Injection Duration (minutes)</label>
+                    <input type="number" id="co2-duration" name="co2-duration" min="0" max="60" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" required>
+                </div>
+                <div>
+                    <label for="ph-level" class="block text-sm font-medium text-gray-700">Target pH Level</label>
+                    <input type="number" id="ph-level" name="ph-level" min="6.0" max="8.5" step="0.1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" required>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-save mr-2"></i>Save Settings
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        document.getElementById('settings-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const settings = {
+                temperature: parseFloat(document.getElementById('temperature').value),
+                lightIntensity: parseFloat(document.getElementById('light-intensity').value),
+                lightDuration: parseInt(document.getElementById('light-duration').value),
+                co2Duration: parseInt(document.getElementById('co2-duration').value),
+                phLevel: parseFloat(document.getElementById('ph-level').value)
+            };
+            localStorage.setItem('algaeSettings', JSON.stringify(settings));
+            alert('Settings saved successfully!');
+        });
+    </script>
+</body>
+</html>

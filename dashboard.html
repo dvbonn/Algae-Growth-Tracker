@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Algae Growth Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .gauge {
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #4ade80, #f59e0b, #ef4444);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-emerald-800 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">
+                <i class="fas fa-seedling mr-2"></i>Algae Growth Tracker
+            </h1>
+            <div class="space-x-4">
+                <a href="index.html" class="hover:text-emerald-200">Home</a>
+                <a href="dashboard.html" class="font-semibold text-emerald-200">Dashboard</a>
+                <a href="settings.html" class="hover:text-emerald-200">Settings</a>
+                <a href="history.html" class="hover:text-emerald-200">History</a>
+                <a href="about.html" class="hover:text-emerald-200">About</a>
+                <a href="#" class="hover:text-emerald-200" id="logout-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-6 text-emerald-900">Growth Parameters Dashboard</h2>
+        
+        <!-- Real-time Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-xl font-semibold mb-4">Temperature Trend</h3>
+                <canvas id="tempChart" height="200"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-xl font-semibold mb-4">pH Level Trend</h3>
+                <canvas id="phChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Parameter Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Temperature Card -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-thermometer-half text-3xl text-red-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold">Temperature</h3>
+                </div>
+                <div class="flex items-end mb-2">
+                    <span class="text-4xl font-bold mr-2" id="current-temp">26.5</span>
+                    <span class="text-gray-500 text-xl">°C</span>
+                </div>
+                <div class="gauge mb-2">
+                    <div class="gauge-fill h-full" style="width: 65%"></div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>20°C</span>
+                    <span>30°C</span>
+                </div>
+            </div>
+
+            <!-- Light Intensity Card -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-sun text-3xl text-yellow-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold">Light Intensity</h3>
+                </div>
+                <div class="flex items-end mb-2">
+                    <span class="text-4xl font-bold mr-2" id="current-light">1200</span>
+                    <span class="text-gray-500 text-xl">lux</span>
+                </div>
+                <div class="bg-gray-200 h-2 rounded-full mb-2">
+                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 60%"></div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>0 lux</span>
+                    <span>2000 lux</span>
+                </div>
+            </div>
+
+            <!-- pH Level Card -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-tint text-3xl text-blue-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold">pH Level</h3>
+                </div>
+                <div class="flex items-end mb-2">
+                    <span class="text-4xl font-bold mr-2" id="current-ph">7.2</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-sm text-gray-600 mr-2">Acidic</span>
+                    <div class="gauge flex-1">
+                        <div class="gauge-fill h-full" style="width: 60%"></div>
+                    </div>
+                    <span class="text-sm text-gray-600 ml-2">Alkaline</span>
+                </div>
+            </div>
+
+            <!-- CO2 Timer Card -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-wind text-3xl text-gray-500 mr-3"></i>
+                    <h3 class="text-xl font-semibold">CO2 Injection</h3>
+                </div>
+                <div class="text-center py-4">
+                    <div class="text-4xl font-bold mb-2" id="co2-timer">05:00</div>
+                    <div class="text-gray-600">Next injection in</div>
+                </div>
+                <button class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-sync-alt mr-2"></i>Reset Timer
+                </button>
+            </div>
+        </div>
+
+        <!-- Light Duration Controls -->
+        <div class="bg-white p-6 rounded-lg shadow mb-8">
+            <h3 class="text-xl font-semibold mb-4">Light Duration</h3>
+            <div class="flex items-center justify-between">
+                <div class="text-3xl font-bold" id="light-timer">08:32:15</div>
+                <div class="flex space-x-2">
+                    <button class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check authentication
+        if(!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Temperature Chart
+            const tempCtx = document.getElementById('tempChart').getContext('2d');
+            const tempChart = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: Array.from({length: 24}, () => Math.random() * 5 + 24),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            min: 20,
+                            max: 30
+                        }
+                    }
+                }
+            });
+
+            // pH Chart
+            const phCtx = document.getElementById('phChart').getContext('2d');
+            const phChart = new Chart(phCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: 'pH Level',
+                        data: Array.from({length: 24}, () => Math.random() * 0.6 + 6.8),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            min: 6.5,
+                            max: 8.5
+                        }
+                    }
+                }
+            });
+
+        // Logout functionality
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'login.html';
+        });
+
+        // Simulate real-time updates
+            setInterval(() => {
+                // Update temperature
+                const newTemp = (Math.random() * 0.4 - 0.2 + 26.5).toFixed(1);
+                document.getElementById('current-temp').textContent = newTemp;
+                
+                // Update light
+                const newLight = Math.floor(Math.random() * 200 + 1100);
+                document.getElementById('current-light').textContent = newLight;
+                
+                // Update pH
+                const newPh = (Math.random() * 0.2 - 0.1 + 7.2).toFixed(1);
+                document.getElementById('current-ph').textContent = newPh;
+                
+                // Update charts
+                tempChart.data.datasets[0].data.shift();
+                tempChart.data.datasets[0].data.push(parseFloat(newTemp));
+                tempChart.update();
+                
+                phChart.data.datasets[0].data.shift();
+                phChart.data.datasets[0].data.push(parseFloat(newPh));
+                phChart.update();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

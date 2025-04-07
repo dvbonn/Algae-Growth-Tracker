@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Algae Growth Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="login-container">
+        <h1 class="login-title">
+            <i class="fas fa-seedling mr-2"></i>Algae Growth Tracker
+        </h1>
+        <form id="login-form">
+            <div class="mb-4">
+                <input type="text" id="username" class="login-input" placeholder="Username" required>
+            </div>
+            <div class="mb-4">
+                <input type="password" id="password" class="login-input" placeholder="Password" required>
+            </div>
+            <button type="submit" class="login-button">
+                <i class="fas fa-sign-in-alt mr-2"></i>Login
+            </button>
+            <div id="login-error" class="login-error hidden">Invalid username or password</div>
+        </form>
+        <div class="login-footer">
+            <p>Don't have an account? <a href="register.html">Register here</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple validation (in a real app, this would be server-side)
+            if(username === 'Trung' && password === '2407') {
+                localStorage.setItem('isLoggedIn', 'true');
+                window.location.href = 'dashboard.html';
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
