@@ -8,7 +8,7 @@ To set up the Algae Growth Tracker on your local machine, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/dvbonn/algae-growth-tracker.git
+   git clone https://github.com/username/algae-growth-tracker.git
    cd algae-growth-tracker
    ```
 
